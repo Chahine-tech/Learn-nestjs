@@ -1,4 +1,4 @@
-import { Body, Response, Controller, Delete, Get, HttpCode, Param, Patch, Post } from '@nestjs/common';
+import { Body, Request, Controller, Delete, Get, HttpCode, Param, Patch, Post } from '@nestjs/common';
 import { InvoicesService } from './invoices.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
@@ -8,9 +8,8 @@ export class InvoicesController {
   constructor(private readonly invoicesService: InvoicesService) {}
 
   @Post()
-  create(@Response() response, @Body() dto: CreateInvoiceDto) {
-    console.log('test:', response.locals.user);
-    return this.invoicesService.create(dto);
+  create(@Request() request, @Body() dto: CreateInvoiceDto) {
+    return this.invoicesService.create(request.user.id, dto);
   }
 
   @Get()

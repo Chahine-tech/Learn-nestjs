@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CredentialsDto } from './dto/credentials.dto';
 import { PrismaService } from '../database/services/prisma.service';
 import * as jwt from 'jsonwebtoken'
@@ -11,15 +11,15 @@ export class AuthenticationService {
   }
 
   async login(credentialsDto: CredentialsDto) {
-    const {email,id} = await this.prisma.user.findFirst({ where: credentialsDto});
-    return { token: jwt.sign({ id }, 'secret'), user: { email, id}}
+    const { email, id, password } = await this.prisma.user.findUnique({ where: {email: credentialsDto.email} });
+    if (credentialsDto.password!== password) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+    return { token: jwt.sign({ id }, 'secret'), user: { email, id } };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} authentication`;
+  register(credentialsDto: CredentialsDto) {
+    return this.prisma.user.create({data: credentialsDto});
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} authentication`;
-  }
 }

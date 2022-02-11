@@ -7,11 +7,11 @@ import { PrismaService } from '../database/services/prisma.service';
 export class InvoicesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(dto: CreateInvoiceDto) {
+  create(userId: string, dto: CreateInvoiceDto) {
     return this.prisma.invoice.create({
       data: {
         ...dto,
-        User: { connect: { id: '781b697f-fed7-4ecc-bab7-58b9ef94c09a' } },
+        User: { connect: { id: userId } },
       },
     });
   }
